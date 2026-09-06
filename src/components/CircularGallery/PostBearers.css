@@ -1,0 +1,33 @@
+section {
+  background: linear-gradient(to bottom, #050816, #050816);
+}
+
+.PostBearers {
+  padding: var(--section-padding-y) var(--section-padding-x);
+  padding-bottom: 13rem;
+}
+
+
+
+.PostBearers-heading {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4rem;
+}
+
+.line-mask {
+  overflow: hidden;
+}
+
+.line-mask h2 {
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-weight: 800;
+  line-height: 0.9;
+  margin: 0;
+  text-align: center;
+  color: #ffffff;
+}
+
+.highlight {
+  color: #00d4ff;
+}

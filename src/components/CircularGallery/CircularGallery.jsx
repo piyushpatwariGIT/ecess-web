@@ -25,6 +25,8 @@ function autoBind(instance) {
 }
 
 const DEFAULT_FONT = 'bold 30px Figtree';
+// Figtree is not guaranteed to be available on the host page, so the component
+// loads it on demand whenever the default font is used.
 const DEFAULT_FONT_URL = 'https://fonts.googleapis.com/css2?family=Figtree:wght@400;700&display=swap';
 
 function deriveFontFamilyFromUrl(url) {
@@ -77,14 +79,24 @@ async function loadCustomFont(fontUrl) {
   return isStylesheet ? loadFontFromStylesheet(fontUrl) : loadFontFromFile(fontUrl);
 }
 
+// Loads `fontUrl` (a stylesheet such as a Google Fonts URL, or a direct font
+// file) and returns a canvas-ready font string that keeps the size/weight from
+// `font` but swaps in the freshly loaded family. Falls back to `font` on error.
 async function resolveFont(font, fontUrl) {
+  // Use the bundled Figtree stylesheet when the caller relies on the default
+  // font, otherwise honor the explicit `fontUrl`.
   const effectiveUrl = fontUrl || (font === DEFAULT_FONT ? DEFAULT_FONT_URL : null);
   if (!effectiveUrl) {
+    // A custom family was supplied without a URL – make sure it is ready (in
+    // case the host page declares it) before we draw it to the canvas,
+    // otherwise the first paint silently falls back to a system font.
     if (document.fonts && document.fonts.load) {
       try {
         await document.fonts.load(font);
         await document.fonts.ready;
-      } catch {}
+      } catch {
+        // Ignore – fall back to whatever the browser provides.
+      }
     }
     return font;
   }
@@ -96,7 +108,9 @@ async function resolveFont(font, fontUrl) {
     if (document.fonts && document.fonts.load) {
       try {
         await document.fonts.load(resolved);
-      } catch {}
+      } catch {
+        // Ignore – we still attempt to render with the requested font.
+      }
     }
     return resolved;
   } catch (error) {
@@ -181,8 +195,20 @@ class Title {
 
 class Media {
   constructor({
-    geometry, gl, image, index, length, renderer, scene, screen, text, viewport,
-    bend, textColor, borderRadius = 0, font
+    geometry,
+    gl,
+    image,
+    index,
+    length,
+    renderer,
+    scene,
+    screen,
+    text,
+    viewport,
+    bend,
+    textColor,
+    borderRadius = 0,
+    font
   }) {
     this.extra = 0;
     this.geometry = geometry;
@@ -205,7 +231,9 @@ class Media {
     this.onResize();
   }
   createShader() {
-    const texture = new Texture(this.gl, { generateMipmaps: true });
+    const texture = new Texture(this.gl, {
+      generateMipmaps: true
+    });
     this.program = new Program(this.gl, {
       depthTest: false,
       depthWrite: false,
@@ -232,12 +260,12 @@ class Media {
         uniform sampler2D tMap;
         uniform float uBorderRadius;
         varying vec2 vUv;
-
+        
         float roundedBoxSDF(vec2 p, vec2 b, float r) {
           vec2 d = abs(p) - b;
           return length(max(d, vec2(0.0))) + min(max(d.x, d.y), 0.0) - r;
         }
-
+        
         void main() {
           vec2 ratio = vec2(
             min((uPlaneSizes.x / uPlaneSizes.y) / (uImageSizes.x / uImageSizes.y), 1.0),
@@ -248,12 +276,13 @@ class Media {
             vUv.y * ratio.y + (1.0 - ratio.y) * 0.5
           );
           vec4 color = texture2D(tMap, uv);
-
+          
           float d = roundedBoxSDF(vUv - 0.5, vec2(0.5 - uBorderRadius), uBorderRadius);
-
+          
+          // Smooth antialiasing for edges
           float edgeSmooth = 0.002;
           float alpha = 1.0 - smoothstep(-edgeSmooth, edgeSmooth, d);
-
+          
           gl_FragColor = vec4(color.rgb, alpha);
         }
       `,
@@ -276,13 +305,20 @@ class Media {
     };
   }
   createMesh() {
-    this.plane = new Mesh(this.gl, { geometry: this.geometry, program: this.program });
+    this.plane = new Mesh(this.gl, {
+      geometry: this.geometry,
+      program: this.program
+    });
     this.plane.setParent(this.scene);
   }
   createTitle() {
     this.title = new Title({
-      gl: this.gl, plane: this.plane, renderer: this.renderer,
-      text: this.text, textColor: this.textColor, font: this.font
+      gl: this.gl,
+      plane: this.plane,
+      renderer: this.renderer,
+      text: this.text,
+      textColor: this.textColor,
+      font: this.font
     });
   }
   update(scroll, direction) {
@@ -348,7 +384,15 @@ class Media {
 class App {
   constructor(
     container,
-    { items, bend, textColor = '#ffffff', borderRadius = 0, font = 'bold 30px Figtree', scrollSpeed = 2, scrollEase = 0.05 } = {}
+    {
+      items,
+      bend,
+      textColor = '#ffffff',
+      borderRadius = 0,
+      font = 'bold 30px Figtree',
+      scrollSpeed = 2,
+      scrollEase = 0.05
+    } = {}
   ) {
     document.documentElement.classList.remove('no-js');
     this.container = container;
@@ -365,7 +409,11 @@ class App {
     this.addEventListeners();
   }
   createRenderer() {
-    this.renderer = new Renderer({ alpha: true, antialias: true, dpr: Math.min(window.devicePixelRatio || 1, 2) });
+    this.renderer = new Renderer({
+      alpha: true,
+      antialias: true,
+      dpr: Math.min(window.devicePixelRatio || 1, 2)
+    });
     this.gl = this.renderer.gl;
     this.gl.clearColor(0, 0, 0, 0);
     this.container.appendChild(this.gl.canvas);
@@ -379,7 +427,10 @@ class App {
     this.scene = new Transform();
   }
   createGeometry() {
-    this.planeGeometry = new Plane(this.gl, { heightSegments: 50, widthSegments: 100 });
+    this.planeGeometry = new Plane(this.gl, {
+      heightSegments: 50,
+      widthSegments: 100
+    });
   }
   createMedias(items, bend = 1, textColor, borderRadius, font) {
     const defaultItems = [
@@ -398,11 +449,24 @@ class App {
     ];
     const galleryItems = items && items.length ? items : defaultItems;
     this.mediasImages = galleryItems.concat(galleryItems);
-    this.medias = this.mediasImages.map((data, index) => new Media({
-      geometry: this.planeGeometry, gl: this.gl, image: data.image, index,
-      length: this.mediasImages.length, renderer: this.renderer, scene: this.scene,
-      screen: this.screen, text: data.text, viewport: this.viewport, bend, textColor, borderRadius, font
-    }));
+    this.medias = this.mediasImages.map((data, index) => {
+      return new Media({
+        geometry: this.planeGeometry,
+        gl: this.gl,
+        image: data.image,
+        index,
+        length: this.mediasImages.length,
+        renderer: this.renderer,
+        scene: this.scene,
+        screen: this.screen,
+        text: data.text,
+        viewport: this.viewport,
+        bend,
+        textColor,
+        borderRadius,
+        font
+      });
+    });
   }
   onTouchDown(e) {
     this.isDown = true;
@@ -431,20 +495,24 @@ class App {
         this.scroll.target += this.scrollSpeed * 5;
         this.onCheckDebounce();
         break;
+
       case 'ArrowLeft':
         e.preventDefault();
         this.scroll.target -= this.scrollSpeed * 5;
         this.onCheckDebounce();
         break;
+
       case 'Home':
         e.preventDefault();
         this.scroll.target = 0;
         this.onCheckDebounce();
         break;
+
       default:
         break;
     }
   }
+
   onCheck() {
     if (!this.medias || !this.medias[0]) return;
     const width = this.medias[0].width;
@@ -453,9 +521,14 @@ class App {
     this.scroll.target = this.scroll.target < 0 ? -item : item;
   }
   onResize() {
-    this.screen = { width: this.container.clientWidth, height: this.container.clientHeight };
+    this.screen = {
+      width: this.container.clientWidth,
+      height: this.container.clientHeight
+    };
     this.renderer.setSize(this.screen.width, this.screen.height);
-    this.camera.perspective({ aspect: this.screen.width / this.screen.height });
+    this.camera.perspective({
+      aspect: this.screen.width / this.screen.height
+    });
     const fov = (this.camera.fov * Math.PI) / 180;
     const height = 2 * Math.tan(fov / 2) * this.camera.position.z;
     const width = height * this.camera.aspect;
@@ -508,6 +581,7 @@ class App {
     if (this.renderer && this.renderer.gl && this.renderer.gl.canvas.parentNode) {
       this.renderer.gl.canvas.parentNode.removeChild(this.renderer.gl.canvas);
     }
+
     if (this.container) {
       this.container.removeEventListener('keydown', this.boundOnKeyDown);
     }
@@ -532,7 +606,13 @@ export default function CircularGallery({
     resolveFont(font, fontUrl).then(resolvedFont => {
       if (!isMounted || !containerRef.current) return;
       app = new App(containerRef.current, {
-        items, bend, textColor, borderRadius, font: resolvedFont, scrollSpeed, scrollEase
+        items,
+        bend,
+        textColor,
+        borderRadius,
+        font: resolvedFont,
+        scrollSpeed,
+        scrollEase
       });
     });
 
