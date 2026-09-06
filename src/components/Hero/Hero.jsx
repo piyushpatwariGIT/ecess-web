@@ -45,7 +45,7 @@ export default function Hero() {
           }}
           style={{ fontFamily: "Stack Sans Notch" }}
         >
-          IEEE
+          ECESS 
         </motion.h1>
 
         <motion.p
@@ -65,7 +65,7 @@ export default function Hero() {
             ease: [0.22, 1, 0.36, 1],
           }}
         >
-          STUDENT BRANCH
+          STUDENT SOCIETY
         </motion.p>
       </div>
     </section>

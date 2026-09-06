@@ -43,7 +43,7 @@ export default function Navbar() {
   return (
     <>
       <header className="navbar navbar-desktop">
-        <div className="nav-logo">IEEE</div>
+        <div className="nav-logo">ECESS</div>
 
         <div className="nav-center">
           <motion.div

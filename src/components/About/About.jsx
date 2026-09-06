@@ -13,7 +13,7 @@ export default function About() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+          
         >
           <span
             style={{

@@ -26,14 +26,15 @@ export default function Footer() {
         {/* LEFT */}
 
         <div className="footer-brand">
-          <h2>IEEE SB</h2>
+          <h2>ECESS SS</h2>
 
           <p>
-            The IEEE Student Branch, NIT Durgapur is a society of enthusiasts
-            aimed at promoting research-related activities in the campus.
-            Comprising of bright researchers, developers, speakers, and other
-            contributors we are a society that welcomes in the era of better
-            research prospects, on the campus.
+            The Electronics & Communication Engineering Student's Society (ECESS), NIT Durgapur is a student-led society dedicated to fostering technical excellence, innovation, and professional growth among ECE students.
+
+Bringing together passionate developers, electronics enthusiasts, innovators, and aspiring engineers, ECESS provides a platform to explore emerging technologies, build practical skills, and connect with industry professionals, faculty, seniors, and alumni.
+
+Through technical workshops, industrial talks, projects, and collaborative initiatives, ECESS strives to bridge the gap between academic learning and real-world engineering, preparing students to take on the challenges of a rapidly evolving technological landscape.
+
           </p>
         </div>
 
@@ -44,7 +45,7 @@ export default function Footer() {
 
           <a href="#">Home</a>
           <a href="#about">About Us</a>
-          <a href="#membership">About IEEE</a>
+          <a href="#membership">About ECESS</a>
           <a href="#collaborators">Collaborators</a>
         </div>
 
@@ -54,10 +55,13 @@ export default function Footer() {
           <h4>Connect</h4>
 
           <a href="#">Instagram</a>
+          <a href="#">Facebook</a>
           <a href="#">LinkedIn</a>
           <a href="#">Email</a>
         </div>
       </div>
     </motion.footer>
+   
   );
+  
 }
