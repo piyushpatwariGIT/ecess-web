@@ -1,19 +1,18 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { initLenis } from "./lib/lenis";
 import Home from "./pages/Home/Home";
-import About from "./components/About/About";
 import { useEffect } from "react";
-import MembershipSocieties from "./components/MembershipSocieties/MembershipSocities";
-import Collaborators from "./components/Collaboratos/Collaborators";
+import Collaborators from "./components/Collaborators/Collaborators";
 import Footer from "./components/Footer/Footer";
+import Bounce from "./components/BounceCards/Bounce";
 
 function Landing() {
   return (
     <>
       <Home />
-      <About />
-      <MembershipSocieties />
+      
       <Collaborators />
+      <Bounce />
       <Footer />
     </>
   );
@@ -23,6 +22,7 @@ function App() {
   useEffect(() => {
     initLenis();
   }, []);
+
   return (
     <BrowserRouter>
       <Routes>

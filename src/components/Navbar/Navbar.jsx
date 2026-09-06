@@ -3,6 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import {
   Home,
   Users,
+  School,
   Calendars,
   GraduationCap,
   CircleUser,
@@ -12,10 +13,11 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const MOBILE_TABS = [
   { label: "Home", to: "/", Icon: Home, end: true },
+  { label: "Faculty", to: "/faculty", Icon: School },
   { label: "Team", to: "/team", Icon: Users },
   { label: "Events", to: "/events", Icon: Calendars },
-  { label: "Alumni", to: "/alumni", Icon: GraduationCap },
-  { label: "Contact", to: "/contact", Icon: CircleUser },
+  
+  
 ];
 
 export default function Navbar() {

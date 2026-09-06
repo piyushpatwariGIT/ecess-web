@@ -41,7 +41,7 @@ Through technical workshops, industrial talks, projects, and collaborative initi
         {/* CENTER */}
 
         <div className="footer-links">
-          <h4>Navigation</h4>
+          <h4>Quick Links</h4>
 
           <a href="#">Home</a>
           <a href="#about">About Us</a>
@@ -52,7 +52,7 @@ Through technical workshops, industrial talks, projects, and collaborative initi
         {/* RIGHT */}
 
         <div className="footer-contact">
-          <h4>Connect</h4>
+          <h4>Follow Us</h4>
 
           <a href="#">Instagram</a>
           <a href="#">Facebook</a>
