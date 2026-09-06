@@ -3,17 +3,15 @@ import "./Collaborators.css";
 
 export default function Collaborators() {
   return (
-    <>
-    <div className="collaborators-heading">
+    <section className="collaborators">
+
+      <div className="collaborators-heading">
         <h2>
           Featured <span className="highlight">Events</span>
         </h2>
       </div>
-    <section className="collaborators">
 
-      
-
-      <div style={{ height: "500px", position: "relative" }}>
+      <div className="collaborators-gallery">
         <CircularGallery
           items={[
             { image: "/logos/collab1.png", text: "Collaborator 1" },
@@ -26,6 +24,5 @@ export default function Collaborators() {
       </div>
 
     </section>
-    </>
   );
 }
